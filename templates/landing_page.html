@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}WeConnect - Welcome{% endblock %}
+
+{% block navbar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">Login</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'register' %}">Register</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <div class="card p-5">
+        <h1 class="display-4">Welcome to WeConnect</h1>
+        <p class="lead">Your gateway to real-time communication.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-3">Get Started</a>
+    </div>
+</div>
+{% endblock %}
