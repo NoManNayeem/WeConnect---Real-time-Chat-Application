@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # Project Apps
     'accounts',
     'chat',
+    'video_chat',
 
 ]
 

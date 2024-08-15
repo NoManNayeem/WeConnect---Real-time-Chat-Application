@@ -149,6 +149,68 @@ WeConnect is designed to be a secure, real-time communication platform with a mi
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+
+## Usage Guide
+
+### 1. Real-Time Chatting
+
+#### Overview
+The real-time chatting feature allows users to communicate with each other instantly within dedicated chat rooms. The chat interface supports sending text messages, and it provides a seamless, responsive experience similar to popular messaging platforms.
+
+#### How to Use
+1. **Create or Join a Chat Room:**
+   - Navigate to the chat section of the application.
+   - Enter the name of the room you'd like to join or create a new room by entering a unique name.
+
+2. **Sending Messages:**
+   - Type your message in the input field at the bottom of the chat interface.
+   - Press "Enter" or click the "Send" button to send the message.
+   - Your message will appear in the chat log with your username, and all other users in the room will receive the message instantly.
+
+3. **Message Formatting:**
+   - The chat interface supports basic text formatting. For example, you can use `**bold**` or `_italic_` to format your text.
+
+#### Suggestions
+- **Use Unique Room Names:** When creating a new room, choose a unique name to avoid accidentally joining an existing conversation.
+- **Stay Connected:** Ensure a stable internet connection for uninterrupted real-time communication.
+- **Privacy:** Remember that all users in the room can see your messages. Avoid sharing sensitive information.
+
+### 2. Video Chatting
+
+#### Overview
+The video chatting feature allows users to engage in real-time video calls within dedicated video chat rooms. This feature supports one-on-one video communication, where each user can see and hear the other in real time.
+
+#### How to Use
+1. **Create or Join a Video Chat Room:**
+   - Navigate to the video chat section of the application.
+   - Enter the name of the room you'd like to join or create a new room by entering a unique name.
+
+2. **Starting a Video Call:**
+   - Upon joining a room, your camera and microphone will be activated, and your video feed will be displayed on the left side of the screen.
+   - The remote user's video feed will appear on the right side once they join the room.
+
+3. **Using Controls:**
+   - **Mute/Unmute:** Click the microphone icon to mute or unmute your microphone.
+   - **Turn Camera On/Off:** Click the camera icon to turn your camera on or off.
+   - **End Call:** Click the red phone icon to end the call.
+
+4. **Display of Usernames:**
+   - Your username will be displayed under your video feed, labeled as "You."
+   - The remote user's username will appear under their video feed.
+
+#### Suggestions
+- **Use a Stable Internet Connection:** Video chatting requires a stable and fast internet connection for smooth communication. If you experience lag or poor video quality, try moving closer to your Wi-Fi router or using a wired connection.
+- **Ensure Good Lighting:** For the best video quality, ensure you are in a well-lit area.
+- **Use Headphones:** To avoid echo and feedback, it's recommended to use headphones with a built-in microphone during the call.
+- **Privacy:** Be aware of your surroundings and what is visible on your camera feed. Make sure you are in a comfortable and appropriate setting before starting a video call.
+
+---
+
+By following these instructions and suggestions, you can make the most of the chatting and video chatting features offered by this application. If you encounter any issues or have further questions, feel free to reach out for support.
+
+
+
+
 ## Acknowledgments
 
 - Django REST Framework - For creating robust APIs.

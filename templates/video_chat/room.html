@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}WeConnect - Video Chat{% endblock %}
+
+{% block content %}
+<div class="video-chat-container">
+    <div class="video-grid">
+        <div class="video-box">
+            <video id="localVideo" autoplay playsinline></video>
+            <p class="username">{{ user.username }} (You)</p>
+        </div>
+        <div class="video-box">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <p class="username" id="remoteUsername">Waiting for user...</p>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="muteButton" class="btn btn-secondary" title="Mute/Unmute">
+            <i id="muteIcon" class="fas fa-microphone"></i>
+        </button>
+        <button id="videoButton" class="btn btn-secondary" title="Turn Camera On/Off">
+            <i id="videoIcon" class="fas fa-video"></i>
+        </button>
+        <button id="hangupButton" class="btn btn-danger" title="End Call" disabled>
+            <i class="fas fa-phone-slash"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    const roomName = "{{ room_name }}";
+    const videoChatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/video_chat/' + roomName + '/'
+    );
+
+    let localStream;
+    let remoteStream;
+    let peerConnection;
+
+    const configuration = {
+        'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]
+    };
+
+    const muteButton = document.getElementById('muteButton');
+    const videoButton = document.getElementById('videoButton');
+    const hangupButton = document.getElementById('hangupButton');
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    const remoteUsernameDisplay = document.getElementById('remoteUsername');
+
+    muteButton.onclick = toggleMute;
+    videoButton.onclick = toggleVideo;
+    hangupButton.onclick = hangUpCall;
+
+    function startCall() {
+        navigator.mediaDevices.getUserMedia({video: true, audio: true})
+            .then(stream => {
+                localStream = stream;
+                localVideo.srcObject = stream;
+
+                peerConnection = new RTCPeerConnection(configuration);
+                peerConnection.addStream(localStream);
+
+                peerConnection.onaddstream = event => {
+                    remoteVideo.srcObject = event.stream;
+                };
+
+                peerConnection.onicecandidate = event => {
+                    if (event.candidate) {
+                        videoChatSocket.send(JSON.stringify({
+                            'message': {
+                                'type': 'candidate',
+                                'candidate': event.candidate,
+                                'username': "{{ user.username }}"
+                            }
+                        }));
+                    }
+                };
+
+                peerConnection.createOffer()
+                    .then(offer => {
+                        peerConnection.setLocalDescription(offer);
+                        videoChatSocket.send(JSON.stringify({
+                            'message': {
+                                'type': 'offer',
+                                'offer': offer,
+                                'username': "{{ user.username }}"
+                            }
+                        }));
+                    });
+
+                hangupButton.disabled = false;
+            })
+            .catch(error => console.error('Error accessing media devices.', error));
+    }
+
+    videoChatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.message.type === 'offer') {
+            remoteUsernameDisplay.textContent = data.message.username;
+            peerConnection.setRemoteDescription(new RTCSessionDescription(data.message.offer));
+            peerConnection.createAnswer()
+                .then(answer => {
+                    peerConnection.setLocalDescription(answer);
+                    videoChatSocket.send(JSON.stringify({
+                        'message': {
+                            'type': 'answer',
+                            'answer': answer,
+                            'username': "{{ user.username }}"
+                        }
+                    }));
+                });
+        } else if (data.message.type === 'answer') {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(data.message.answer));
+            remoteUsernameDisplay.textContent = data.message.username;
+        } else if (data.message.type === 'candidate') {
+            const candidate = new RTCIceCandidate(data.message.candidate);
+            peerConnection.addIceCandidate(candidate);
+            remoteUsernameDisplay.textContent = data.message.username;
+        }
+    };
+
+    function toggleMute() {
+        const enabled = localStream.getAudioTracks()[0].enabled;
+        localStream.getAudioTracks()[0].enabled = !enabled;
+        muteIcon.className = enabled ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+    }
+
+    function toggleVideo() {
+        const enabled = localStream.getVideoTracks()[0].enabled;
+        localStream.getVideoTracks()[0].enabled = !enabled;
+        videoIcon.className = enabled ? 'fas fa-video-slash' : 'fas fa-video';
+    }
+
+    function hangUpCall() {
+        peerConnection.close();
+        videoChatSocket.close();
+
+        hangupButton.disabled = true;
+        remoteUsernameDisplay.textContent = "Call ended";
+
+        // Optionally, reset the local and remote video elements
+        localVideo.srcObject = null;
+        remoteVideo.srcObject = null;
+    }
+
+    // Start the call when the page loads
+    window.onload = startCall;
+</script>
+
+<style>
+    .video-chat-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .video-grid {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 20px;
+    }
+
+    .video-box {
+        position: relative;
+        text-align: center;
+    }
+
+    video {
+        width: 100%;
+        max-width: 400px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .username {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    button {
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+    }
+</style>
+{% endblock %}

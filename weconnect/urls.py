@@ -10,6 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('chat/', include('chat.urls')),
+    path('video_chat/', include('video_chat.urls')),
     path('', landing_page, name='landing_page'),  # Landing page
     path('home/', home_page, name='home'),  # Home page
 ]
